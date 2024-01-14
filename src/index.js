@@ -161,7 +161,7 @@ window.addEventListener('pointerdown', () => {
   let intersects = raycaster.intersectObject(sun, false);
 
   if (intersects.length > 0) {
-    updateInfoText('Clicked on the Sun object');
+    updateInfoText('The sun emits solar radiation, an rewable energy available almost everywhere on earth');
     console.log('The ray intersects the object sun', intersects[0]);
   }
 
@@ -172,12 +172,12 @@ window.addEventListener('pointerdown', () => {
       const clickedObjectName = intersects[0].object.name;
 
       if (clickedObjectName === 'Body95_3' || clickedObjectName === 'Body95_5') {
-        updateInfoText('Clicked on the mirror');
+        updateInfoText('The mirror matrix is oriented to reflect the sun radiation towards a same point');
       } else if (clickedObjectName === 'Body95_1') {
-        updateInfoText('Clicked on the oven');
+        updateInfoText('The oven is the object that receives concentrated solar radiation from the mirror matrix. Its objective is to have an isolation and a thermical inertia as high as possible.');
       } else {
         // Add more conditions for other object names if needed
-        updateInfoText(`Clicked on ${clickedObjectName}`);
+        updateInfoText(`Clicked on ${clickedObjectName}, now you name of the element but nothing special about this piece. Try the sun, or the mirrors, or the oven :)`);
       }
 
       console.log('The ray intersects the object solarOven', intersects[0]);
