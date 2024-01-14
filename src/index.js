@@ -7,7 +7,6 @@ import { RenderPass } from 'three/addons/postprocessing/RenderPass.js';
 import { UnrealBloomPass } from 'three/addons/postprocessing/UnrealBloomPass.js';
 import { OutputPass } from 'three/addons/postprocessing/OutputPass.js';
 
-// Créer une scène
 const scene = new THREE.Scene();
 
 const renderer = new THREE.WebGLRenderer({ antialias: true, alpha: false });
@@ -34,18 +33,15 @@ controls.enablePan = false
 controls.maxPolarAngle = Math.PI / 2.2
 controls.enableZoom = true;
 
-// Handle the window resize event
 window.addEventListener('resize', () => {
-  // Update the camera
+  
   camera.aspect = window.innerWidth / window.innerHeight;
   camera.updateProjectionMatrix();
 
-  // Update the renderer
   renderer.setSize(window.innerWidth, window.innerHeight);
   renderer.setPixelRatio(window.devicePixelRatio);
 });
 
-// Load background texture
 const Backloader = new THREE.TextureLoader();
 let textureEquirec = Backloader.load('./rural_asphalt_road.jpg');
 textureEquirec.mapping = THREE.EquirectangularReflectionMapping;
@@ -53,7 +49,7 @@ textureEquirec.colorSpace = THREE.SRGBColorSpace;
 
 scene.background = textureEquirec;
 
-// Charger le modèle glTF
+//Chargement du modèle glTF
 const loader = new GLTFLoader();
 let solarOven;
 loader.load('sans_nom.gltf', (gltf) => {
@@ -92,22 +88,17 @@ loader.load('sans_nom.gltf', (gltf) => {
     })
     scene.add(model);
     model.scale.set(5, 5, 5);
-
-    // Créer un helper pour les axes
     const axesHelper = new THREE.AxesHelper();
-    model.position.set(2, 1, -1); // Position d'origine
-    model.rotation.set(0, -Math.PI / 2, 0); // Rotation d'origine
+    model.position.set(2, 1, -1); //Position d'origine
+    model.rotation.set(0, -Math.PI / 2, 0); //Rotation d'origine
     axesHelper.scale.set(10, 10, 10);
     solarOven = model;
-
-    // scene.add(axesHelper);
-
     console.log('Model loaded successfully:', gltf);
 }, undefined, (error) => {
     console.error('Error loading model:', error);
 });
 
-const Alight = new THREE.AmbientLight(0xffffff, 1); // Lumière ambiante blanche
+const Alight = new THREE.AmbientLight(0xffffff, 1); //Lumière ambiante blanche
 scene.add(Alight);
 
 const light = new THREE.SpotLight(0xffffff, 10, 0, Math.PI / 3, 1, 0.1);
@@ -138,7 +129,6 @@ window.addEventListener('pointermove', (event) => {
 
 const raycaster = new THREE.Raycaster();
 
-// Step 1: Add an HTML element for displaying text
 const infoText = document.createElement('div');
 infoText.style.position = 'absolute';
 infoText.style.bottom = '10px';
@@ -148,13 +138,10 @@ infoText.style.fontFamily = 'Arial';
 infoText.style.fontSize = '16px';
 document.body.appendChild(infoText);
 
-// Step 2: Create a function to update the displayed text
 function updateInfoText(message) {
   infoText.innerText = message;
 }
 
-
-// Step 3: Modify your click event listener to update and display different text
 window.addEventListener('pointerdown', () => {
   raycaster.setFromCamera(pointerPosition, camera);
 
@@ -187,11 +174,8 @@ window.addEventListener('pointerdown', () => {
 
 
 
-// ... Code existant ...
 
-
-// Créer une nouvelle sphère pour l'effet lueur (sans texture)
-const glowGeometry = new THREE.SphereGeometry(3.2, 15, 32); // Ajustez la taille selon vos besoins
+const glowGeometry = new THREE.SphereGeometry(3.2, 15, 32);
 const glowMaterial = new THREE.ShaderMaterial({
     uniforms: {
         time: { value: 1.0 },
@@ -225,11 +209,11 @@ const glowMaterial = new THREE.ShaderMaterial({
             gl_FragColor = vec4(result, 1.0); // Fixez l'alpha à 1.0 pour éviter la transparence
         }
     `,
-    side: THREE.BackSide, // Rendu sur le côté arrière de la sphère
+    side: THREE.BackSide, 
     transparent: true,
-    blending: THREE.AdditiveBlending, // Mélange additif pour l'effet de lueur
+    blending: THREE.AdditiveBlending, 
     depthWrite: false,
-    depthTest: false, // Ne pas écrire dans le tampon de profondeur pour éviter les problèmes de z-fighting
+    depthTest: false, //Ne pas écrire dans le tampon de profondeur pour éviter les problèmes de z-fighting
 });
 
 const glowSphere = new THREE.Mesh(glowGeometry, glowMaterial);
@@ -241,9 +225,9 @@ composer.setSize(window.innerWidth, window.innerHeight);
 const renderPass = new RenderPass(scene, camera);
 const bloomPass = new UnrealBloomPass(
     new THREE.Vector2(window.innerWidth, window.innerHeight),
-    1.0, // strength
-    0.85, // radius
-    0.9 // threshold
+    1.0, 
+    0.85, 
+    0.9
 );
 const outputPass = new OutputPass();
 
@@ -251,47 +235,21 @@ composer.addPass(renderPass);
 composer.addPass(bloomPass);
 composer.addPass(outputPass);
 
-// camera.lookAt(new THREE.Vector3(0, 10, 0))
 
 renderer.setAnimationLoop((time) => {
-    glowMaterial.uniforms.time.value = time; // Mettez à jour le temps dans le shader
+    glowMaterial.uniforms.time.value = time;
     grass.update(time)
-    // Faire tourner la sphère "Sun" sur elle-même autour de l'axe Y
+    //rotation du soleil
     sun.rotation.y += 0.002;
     controls.update()
     renderer.render(scene, camera)
     composer.render();
     renderer.autoClear = false;
 
-    // renderer.render(scene,camera)
 
 });
 
 
-
-// ... Code existant ...
-// Ajoutez la sphère de lueur en tant qu'enfant de votre soleil
-
-
-// renderer.setAnimationLoop((time) => {
-  
-
-//   // Faire tourner la sphère "Sun" sur elle-même autour de l'axe Y
-//   sun.rotation.y += 0.002;
-
-//   controls.update()
-//   camera.lookAt(new THREE.Vector3(0, 10, 0))//MARCHE PAAAAAAS
-//   renderer.render(scene, camera)
-// });
-
-// // Animation
-// // const animate = () => {
-//   requestAnimationFrame(animate);
-  
-//   renderer.render(scene, camera);
-// };
-
-// Redimensionner la fenêtre
 window.addEventListener('resize', () => {
   composer.setSize(window.innerWidth, window.innerHeight);
   const newWidth = window.innerWidth;
@@ -302,6 +260,3 @@ window.addEventListener('resize', () => {
 
   renderer.setSize(newWidth, newHeight);
 });
-
-// Lancer l'animation
-// animate();
